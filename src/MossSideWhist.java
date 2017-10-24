@@ -12,7 +12,6 @@ public class MossSideWhist{
   private Random rand = new Random();  //using for dealing cards
   private PrintStream report;  //For debugging. Can show hands and moves of each agent to stdout, 
                                //or can be replaced by a stub to hide the full game state.
-
   /**
    * Constructor. Takes three agents and their names, and initialises variables
    * @param p1 the class of the first agent (will be leader in the first round)
@@ -75,7 +74,7 @@ public class MossSideWhist{
   display(leader); display(left); display(right);  
     Card[] discard = agents.get(leader).discard();
     for(int i = 0; i<4; i++){
-      if(i>discard.length || !hands.get(leader).remove(discard[i]))
+      if(i>=discard.length || !hands.get(leader).remove(discard[i]))
         hands.get(leader).remove(0);//if illegitimate discards, the 0 card is discarded.
         //could include a score penalty here as well.
         display(leader);
@@ -239,7 +238,7 @@ public class MossSideWhist{
 
   public static void main(String[] args){
     MossSideWhist game = new MossSideWhist(new RandomAgent(), new RandomAgent(), new GreedyNaive());
-    game.playGame(1, System.out);
+    game.playGame(100, System.out);
   }
 }
 
