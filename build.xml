@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project name="Moss-Side-Whist-AI" default="compile" basedir=".">
+
+	<property name="main" value="MossSideWhist"/>
+	<property name="dir.jarfile" value="."/>
+	<property name="dir.src" value="./src"/>
+	<property name="project.name" value="Moss-Side-Whist-AI"/>
+
+	<path id="classpath">
+		<pathelement location="bin"/>
+	</path>
+
+	<target name="clean" description="remove binaries dir and jar file">
+		<delete dir="${dir.jarfile}" includes="**/${project.name}.jar"/>
+		<delete dir="bin"/>
+	</target>
+
+	<target name="create" depends="clean">
+		<mkdir dir="bin"/>
+	</target>
+
+
+	<target name="compile" depends="create" description="compile java source code. Create a single JAR file containing all binaries and res.">
+		<!-- Compile all java files -->
+		<javac classpathref="classpath" srcdir="./src" destdir="./bin" includes="**/*.java" includeantruntime="false">
+		</javac>
+		<!-- Create a JAR which can be used to run the program -->
+		<jar destfile="${dir.jarfile}/${project.name}.jar" filesetmanifest="mergewithoutmain">
+			<manifest>
+				<attribute name="Main-Class" value="${main}"/>
+				<attribute name="Class-Path" value="."/>
+			</manifest>
+			<fileset dir="./bin"/>
+		</jar>
+	</target>
+
+</project>
+
