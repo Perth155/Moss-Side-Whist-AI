@@ -2,8 +2,9 @@
 *.class
 /bin/
 
-# Log file
+# Log file/ test
 *.log
+/test/
 
 # Package Files 
 *.jar

@@ -3,8 +3,8 @@ import java.io.*;
 
 public class MossSideWhist{
 
-  private static final String PLAYER_AGENT = "GR33D by abraram"; // ;SPECIFIED FOR DEBUGGING... 
-  private static final String PLAYER_AGENT_TWO = "GR33Dv2 by abraram";
+  private static final String PLAYER_AGENT = "ALL H1GH by abraram"; // ;SPECIFIED FOR DEBUGGING...
+  private static final String PLAYER_AGENT_TWO = "GR33Dv2 High with Low spades";
 
   private String leader; //the name of the first player
   private String left; //the name of the second player
@@ -13,9 +13,9 @@ public class MossSideWhist{
   private Map<String, Integer> scoreboard;  //a map from names to scores
   private Map<String, ArrayList<Card>> hands;  //a map from names to cards
   private Random rand = new Random();  //using for dealing cards
-  private PrintStream report;  //For debugging. Can show hands and moves of each agent to stdout, 
+  private PrintStream report;  //For debugging. Can show hands and moves of each agent to stdout,
                                //or can be replaced by a stub to hide the full game state.
-  
+
   /**
    * Constructor. Takes three agents and their names, and initialises variables
    * @param p1 the class of the first agent (will be leader in the first round)
@@ -41,7 +41,7 @@ public class MossSideWhist{
   }
 
   /**
-   * Constructor. Takes three agents, and initialises variables. 
+   * Constructor. Takes three agents, and initialises variables.
    * Names will be taken fromm agents sayName method
    * @param p1 the class of the first agent (will be leader in the first round)
    * @param p2 the class of the second agent
@@ -69,13 +69,13 @@ public class MossSideWhist{
   //Maybe should pass in the report as an argument?
   /**
    * The Logic for playing a hand of Moss Side Whist.
-   * Cards are dealt, the leader discards and then all tricks are played, 
+   * Cards are dealt, the leader discards and then all tricks are played,
    * until no more cards remain.
    * */
   public void playHand(){
-  report.println("The leader is "+leader+", to the left is "+left+" and "+right+" is to the right.");  
+  report.println("The leader is "+leader+", to the left is "+left+" and "+right+" is to the right.");
     deal();
-    display(leader); display(left); display(right);  
+    display(leader); display(left); display(right);
     Card[] discard = agents.get(leader).discard();
     for(int i = 0; i<4; i++){
       if(i>=discard.length || !hands.get(leader).remove(discard[i]))
@@ -83,27 +83,28 @@ public class MossSideWhist{
     	hands.get(leader).remove(0);//if illegitimate discards, the 0 card is discarded.
     	if(agents.get(leader).sayName().equals(this.PLAYER_AGENT) || agents.get(leader).sayName().equals(this.PLAYER_AGENT_TWO))
     	{
-    		System.err.println("\n\n PLAYER AGENT FAILED TO DISCARD\n-8 to score.\n");
-    		scoreboard.put(leader, scoreboard.get(leader)-8);
+    		System.err.println("\n\n PLAYER AGENT FAILED TO DISCARD\n-50 to score.\n");
+    		scoreboard.put(leader, scoreboard.get(leader)-50);
     	}
-    	 
+
       }
         //could include a score penalty here as well.
         display(leader);
     }
+    System.out.println("***********\nDiscard Complete\n************");
     String first = leader;
     for(int i = 0; i<16; i++){
-    	display(leader); display(left); display(right);  
+    	display(leader); display(left); display(right);
     	first = trick(first);
     	scoreboard.put(first, scoreboard.get(first)+1);
     }
     scoreboard.put(leader, scoreboard.get(leader)-8);
     scoreboard.put(left, scoreboard.get(left)-4);
     scoreboard.put(right, scoreboard.get(right)-4);
-    agents.get(leader).seeScore(scoreboard); 
-    agents.get(left).seeScore(scoreboard); 
+    agents.get(leader).seeScore(scoreboard);
+    agents.get(left).seeScore(scoreboard);
     agents.get(right).seeScore(scoreboard);
-  showScores();  
+  showScores();
   }
 
   /**
@@ -135,8 +136,8 @@ public class MossSideWhist{
   /**
    * Logic for one trick of the game.
    * Each agent plays a card in turn.
-   * If an agent plays an illegal card, 
-   * a random legal card from their hand is played in its place. 
+   * If an agent plays an illegal card,
+   * a random legal card from their hand is played in its place.
    * A points penalty may also be applied.
    * Returns the name of the winner.
    * @param first the name of the first player to play a card in this trick
@@ -158,10 +159,10 @@ public class MossSideWhist{
     	  scoreboard.put(first, scoreboard.get(first)-50);
       }
     }
-    
+
   showCards(lead, first);
   report.println(lead);
-  display(second, true);  
+  display(second, true);
     Card next = agents.get(second).playCard();
     hand = hands.get(second);
     while(!legal(next, second, lead.suit))
@@ -176,7 +177,7 @@ public class MossSideWhist{
      hand.remove(next);
     showCards(next, second);
   report.println(next);
-  display(third, true);  
+  display(third, true);
     Card last = agents.get(third).playCard();
     hand = hands.get(third);
     while(!legal(last, third, lead.suit))
@@ -187,15 +188,15 @@ public class MossSideWhist{
     	  System.err.println("\n\n\nILLEGAL MOVE FROM PLAYER AGENT...\n RANDOMISING..\n Penalty = -50\n\n");
     	  scoreboard.put(third, scoreboard.get(third)-50);
       }
-    } 
+    }
      hand.remove(last);
     showCards(last, third);
-  report.println(last);  
+  report.println(last);
     String winner = getWinner(lead, next, last, first, second, third);
     agents.get(leader).seeResult(winner);
     agents.get(left).seeResult(winner);
     agents.get(right).seeResult(winner);
-  report.println(winner+" wins the trick!");  
+  report.println(winner+" wins the trick!");
     return winner;
   }
 
@@ -217,7 +218,7 @@ public class MossSideWhist{
         return third;
       }
     }
-  }  
+  }
 
   //checks to see if a card follows suit, or is a trump
   private boolean followsSuit(Card c1, Card c2){
@@ -231,7 +232,7 @@ public class MossSideWhist{
     agents.get(left).seeCard(c, player);
     agents.get(right).seeCard(c, player);
   }
-  
+
   //checks to see if the played card was legal
   private boolean legal(Card played, String player, Suit suit){
     if(hands.get(player).contains(played)){
@@ -243,7 +244,7 @@ public class MossSideWhist{
       }
       return true; // card in hand and matched suit
     }
-    return false; //card not in hand.      
+    return false; //card not in hand.
   }
 
   //overloaded method to display an agents full hand
@@ -271,8 +272,7 @@ public class MossSideWhist{
   }
 
   public static void main(String[] args){
-    MossSideWhist game = new MossSideWhist(new RationalLowAgent(), new RandomAgent(), new RandomAgent());
-    game.playGame(100, System.out);
+    MossSideWhist game = new MossSideWhist( new GreedyAgentX(), new GreedyAgentOpt(),  new GreedyAgent());
+    game.playGame(1, System.out);
   }
 }
-
