@@ -1,15 +1,21 @@
+/**
+ * A rule-based greedy agent that attempts to make the best decisions at each trick. 
+ * Will need to account for probabilities of what the opponent has and the cards that has been played
+ * to improve performance. 
+ * @author Abrar Amin (abrar.a.amin@gmail.com)
+ */
+
 import java.util.Map;
 import java.util.List;
 import java.util.LinkedList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 
-public class GreedyNaive implements MSWAgent
+public class RationalAgent implements MSWAgent
 {
 	private String name;
 	private List<Card> seenCards; //stores the current hand of the player. 
-	private int turn;
+	private int turn; //stores how many cards have been played out of 3 players... 
 	private List<Card> currentHand; //stores the cards in player's hand. 
 	private List<Card> hearts;
 	private List<Card> diamonds;
@@ -17,9 +23,9 @@ public class GreedyNaive implements MSWAgent
 	private List<Card> spades;
 	private Comparator<Card> cardComparator;
 
-	public GreedyNaive()
+	public RationalAgent()
 	{
-		this.name = "GR33D by abraram";
+		this.name = "GR33Dv2 by abraram";
 		this.turn = 0;
 		this.seenCards = new LinkedList<Card>();
 		this.currentHand = new LinkedList<Card>();
@@ -80,7 +86,7 @@ public class GreedyNaive implements MSWAgent
   	* */
  	public void setup(String agentLeft, String agentRight)
 	{
-		//TODO
+
 	}
 
        	/**
@@ -145,6 +151,7 @@ public class GreedyNaive implements MSWAgent
 			discardArr[i] = currentHand.remove(0);
 		}
 		printDiscardArray(discardArr);
+		putCardsToSuitList();
 		return discardArr;
 	}
 	
@@ -212,6 +219,7 @@ public class GreedyNaive implements MSWAgent
  			else
  			{
  				pc = playingSuitReference.remove(playingSuitReference.size()-1);
+ 				System.out.println("removed first... "+pc.toString());
  				this.currentHand.remove(pc);
  			}
  		}else {

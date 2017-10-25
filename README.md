@@ -15,6 +15,12 @@ Play continues until all cards have been played, and then the points are tallied
 At the end of the round the leaders score is their number of points, minus eight, and the other players scores are their numbers of points, minus four.
 Several rounds will be player, each time with the lead moving one place to the left. Scores are accumulated over rounds, and players aim to have the highest score.
 
+
+## Requirements
+* [JDK 1.8] (http://openjdk.java.net/install/)
+* [Apache Ant] (http://ant.apache.org/)
+
+
 ## Compiling and running
 To compile and run the project:
 ```

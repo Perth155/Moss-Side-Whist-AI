@@ -3,6 +3,9 @@ import java.io.*;
 
 public class MossSideWhist{
 
+  private static final String PLAYER_AGENT = "GR33D by abraram"; // ;SPECIFIED FOR DEBUGGING... 
+  private static final String PLAYER_AGENT_TWO = "GR33Dv2 by abraram";
+
   private String leader; //the name of the first player
   private String left; //the name of the second player
   private String right; //the name of the third player
@@ -12,6 +15,7 @@ public class MossSideWhist{
   private Random rand = new Random();  //using for dealing cards
   private PrintStream report;  //For debugging. Can show hands and moves of each agent to stdout, 
                                //or can be replaced by a stub to hide the full game state.
+  
   /**
    * Constructor. Takes three agents and their names, and initialises variables
    * @param p1 the class of the first agent (will be leader in the first round)
@@ -20,7 +24,7 @@ public class MossSideWhist{
    * @param n1 the name of the first agent, must be different to n2 and n3, otherwise names reassigned
    * @param n2 the name of the first agent, must be different to n1 and n3, otherwise names reassigned
    * @param n3 the name of the first agent, must be different to n2 and n1, otherwise names reassigned
-   * */
+   **/
   public MossSideWhist(MSWAgent p1, String n1, MSWAgent p2, String n2, MSWAgent p3, String n3){
     //assign names
     leader = n1;
@@ -71,19 +75,27 @@ public class MossSideWhist{
   public void playHand(){
   report.println("The leader is "+leader+", to the left is "+left+" and "+right+" is to the right.");  
     deal();
-  display(leader); display(left); display(right);  
+    display(leader); display(left); display(right);  
     Card[] discard = agents.get(leader).discard();
     for(int i = 0; i<4; i++){
       if(i>=discard.length || !hands.get(leader).remove(discard[i]))
-        hands.get(leader).remove(0);//if illegitimate discards, the 0 card is discarded.
+      {
+    	hands.get(leader).remove(0);//if illegitimate discards, the 0 card is discarded.
+    	if(agents.get(leader).sayName().equals(this.PLAYER_AGENT) || agents.get(leader).sayName().equals(this.PLAYER_AGENT_TWO))
+    	{
+    		System.err.println("\n\n PLAYER AGENT FAILED TO DISCARD\n-8 to score.\n");
+    		scoreboard.put(leader, scoreboard.get(leader)-8);
+    	}
+    	 
+      }
         //could include a score penalty here as well.
         display(leader);
     }
     String first = leader;
     for(int i = 0; i<16; i++){
-  display(leader); display(left); display(right);  
-      first = trick(first);
-      scoreboard.put(first, scoreboard.get(first)+1);
+    	display(leader); display(left); display(right);  
+    	first = trick(first);
+    	scoreboard.put(first, scoreboard.get(first)+1);
     }
     scoreboard.put(leader, scoreboard.get(leader)-8);
     scoreboard.put(left, scoreboard.get(left)-4);
@@ -138,23 +150,45 @@ public class MossSideWhist{
     Card lead = agents.get(first).playCard();
     ArrayList<Card> hand = hands.get(first);
     if(!hand.remove(lead))
+    {
       lead = hand.remove(rand.nextInt(hand.size()));
-    showCards(lead, first);
+      if(agents.get(first).sayName().equals(PLAYER_AGENT) || agents.get(first).sayName().equals(PLAYER_AGENT_TWO) )
+      {
+    	  System.err.println("\n\n\nINVALID START CARD FROM PLAYER AGENT...\n RANDOMISING..\n Penalty = -50\n\n");
+    	  scoreboard.put(first, scoreboard.get(first)-50);
+      }
+    }
+    
+  showCards(lead, first);
   report.println(lead);
   display(second, true);  
     Card next = agents.get(second).playCard();
     hand = hands.get(second);
     while(!legal(next, second, lead.suit))
+    {
       next = hand.get(rand.nextInt(hand.size()));
-    hand.remove(next);
+      if(agents.get(second).sayName().equals(PLAYER_AGENT) || agents.get(second).sayName().equals(PLAYER_AGENT_TWO))
+      {
+    	  System.err.println("\n\n\nILLEGAL MOVE FROM PLAYER AGENT...\n RANDOMISING..\n Penalty = -50\n\n");
+    	  scoreboard.put(second, scoreboard.get(second)-50);
+      }
+    }
+     hand.remove(next);
     showCards(next, second);
   report.println(next);
   display(third, true);  
     Card last = agents.get(third).playCard();
     hand = hands.get(third);
     while(!legal(last, third, lead.suit))
+    {
       last = hand.get(rand.nextInt(hand.size()));
-    hand.remove(last);
+      if(agents.get(third).sayName().equals(PLAYER_AGENT) || agents.get(third).sayName().equals(PLAYER_AGENT_TWO))
+      {
+    	  System.err.println("\n\n\nILLEGAL MOVE FROM PLAYER AGENT...\n RANDOMISING..\n Penalty = -50\n\n");
+    	  scoreboard.put(third, scoreboard.get(third)-50);
+      }
+    } 
+     hand.remove(last);
     showCards(last, third);
   report.println(last);  
     String winner = getWinner(lead, next, last, first, second, third);
@@ -237,7 +271,7 @@ public class MossSideWhist{
   }
 
   public static void main(String[] args){
-    MossSideWhist game = new MossSideWhist(new RandomAgent(), new RandomAgent(), new GreedyNaive());
+    MossSideWhist game = new MossSideWhist(new RationalLowAgent(), new RandomAgent(), new RandomAgent());
     game.playGame(100, System.out);
   }
 }
