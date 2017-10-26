@@ -74,6 +74,14 @@ public class MCTNode {
         children.add(node);
     }
 
+    public void print() {
+        System.out.println("nWins: " + nWins);
+        System.out.println("nVisits: " + nVisits);
+        System.out.println("");
+        for (MCTNode child: children) 
+            child.print();
+    }
+
     public Card getPlayedCard() {
         for (Card card: state.getPlayedCards()) {
             if (!parent.getState().getPlayedCards().contains(card))

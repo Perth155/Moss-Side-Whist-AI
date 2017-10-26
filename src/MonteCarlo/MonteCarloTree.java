@@ -25,13 +25,13 @@ public class MonteCarloTree {
      */
     public MCTNode selectNode(MCTNode node) {
         if (node.getChildren().size() == 0) {
-            expandNode(node);
+            return node;
         }
 
-        if (!node.getState().isPlayerTurn()) {
-            node.getState().print();
-            throw new IllegalArgumentException("This node does not represent the Player's turn");
-        }
+        // if (node == rootNode() && !node.getState().isPlayerTurn()) {
+        //     node.getState().print();
+        //     throw new IllegalArgumentException("This node does not represent the Player's turn");
+        // }
 
         MCTNode bestNode = null;
         double bestNodeScore = -1;
@@ -41,7 +41,7 @@ public class MonteCarloTree {
                 bestNodeScore = child.getUpperConfidenceBound();
             }
         }
-        return bestNode;
+        return selectNode(bestNode);
     }
 
     /**
@@ -165,6 +165,10 @@ public class MonteCarloTree {
             List<MCTNode> children = node.getChildren();
             return children.get(random.nextInt(children.size()));
         }
+    }
+
+    public void print() {
+        rootNode.print();
     }
 
     /**

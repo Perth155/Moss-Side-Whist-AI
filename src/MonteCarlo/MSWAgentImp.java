@@ -7,8 +7,6 @@ public class MSWAgentImp implements MSWAgent{
     private GameState gameState;
     private String name;
 
-    private int MAX_LOOPS = 50000;
-
     public MSWAgentImp(String name) {
         this.name = name;
     }
@@ -17,10 +15,6 @@ public class MSWAgentImp implements MSWAgent{
         this.name = "My Agent";
     }
 
-    public MSWAgentImp(int loops) {
-        MAX_LOOPS = loops;
-        name = "My Agent";
-    }
 
     /**
      * Tells the agent the names of the competing agents, and their relative position.
@@ -85,61 +79,47 @@ public class MSWAgentImp implements MSWAgent{
      * @return the Card they wish to play.
      * */
     public Card playCard() {
-        long startTime = System.currentTimeMillis();
-
-        Card bestCard = gameState.getPlayersCards().get(0);      
-        // System.out.println("Played cards: ");
-        // for (Card card : gameState.getPlayedCards()) {
-        //     System.out.print(card + ", ");
-        // }
-        // System.out.println();
+        long totalTime = 0;
+        long timeLimit = 200;
+        int nLoops = 0;
+        long averageTime = 0;
         MonteCarloTree mct = new MonteCarloTree(gameState);
-        for (int i=0; i<MAX_LOOPS; i++) {
-            // System.out.println("Beginning loop " + i);
-            // System.out.println("Creating game state");
 
+        while (timeLimit - totalTime > averageTime) {
+            long startTime = System.currentTimeMillis();
             // Selection phase.
-            // System.out.println("Starting selection phase");            
             MCTNode bestNode = mct.selectNode();
-            bestCard = bestNode.getPlayedCard();
-
-            if (!gameState.getPlayersCards().contains(bestCard)) {
-                System.out.println("Invalid card chosen");
-                System.out.println("Player chose " + bestCard);
-                System.out.println("Player's cards: ");
-                for (Card card : gameState.getPlayersCards()) {
-                    System.out.print(card + ", ");
-                }
-                System.out.println();
-
-                System.out.println("Played cards: ");
-                for (Card card : bestNode.getState().getPlayedCards()) {
-                    System.out.print(card + ", ");
-                }
-                System.out.println();
-                throw new RuntimeException("Invalid card chosen");                
-            }
 
             // Expansion phase.
-            // System.out.println("Starting expansion phase for card " + bestCard.toString());            
             MCTNode expandedNode = mct.expansionPhase(bestNode);
 
             // Simulation phase.
-            // System.out.println("Starting simulation phase");
             boolean won = mct.simulateGame(expandedNode);
 
+            //Back propogation phase.
             mct.backPropogate(expandedNode, won);
+            long executionTime = System.currentTimeMillis() - startTime;
+            nLoops++;
+            totalTime += executionTime;
+            averageTime = totalTime / (long)nLoops;
         }
-        // Card card = bestCard;
-        Card card = mct.getBestCard();
-        gameState.getPlayersCards().remove(card);
+
+        Card bestCard = mct.getBestCard();
+
+        // Throw exception if the agent chose a card it does not have.
+        if (!gameState.getPlayersCards().contains(bestCard)) {
+            System.out.println("Invalid card chosen");
+            System.out.println("Player chose " + bestCard);
+            System.out.println("Player's cards: ");
+            for (Card card : gameState.getPlayersCards()) {
+                System.out.print(card + ", ");
+            }
+            throw new RuntimeException("Invalid card chosen");                
+        }
+
+        gameState.getPlayersCards().remove(bestCard);
         gameState.incrementTurn();
-
-        long endTime   = System.currentTimeMillis();
-        long totalTime = endTime - startTime;
-
-        System.out.println("Execution Time:" + totalTime);
-        return card;
+        return bestCard;
     }
 
     /**
