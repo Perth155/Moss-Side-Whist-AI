@@ -193,7 +193,6 @@ public class RationalAgentOM implements MSWAgent
   	public Card[] discard()
 	{
 		Collections.sort(currentHand, cardComparator);
-
 		Card discardArr[] = new Card[4];
 		for(int i = 0; i < discardArr.length; i++)
 		{
@@ -208,17 +207,41 @@ public class RationalAgentOM implements MSWAgent
 	 * Returns the largest suit in Agent's hand.
 	 * @return
 	 */
+	/**
+	 * Returns the largest suit in Agent's hand. If the 2 suits are of equal size,
+	 * return the list of suit with the smaller stronger card.
+	 * @return list of cards belonging to the largest suit in hand.
+	 */
  	private List<Card> findLargestSuitInHand()
  	{
  		Collections.sort(this.hearts, cardComparator); Collections.sort(this.diamonds, cardComparator);
  		Collections.sort(this.spades, cardComparator); Collections.sort(this.clubs, cardComparator);
- 		List<Card> ls = ((this.spades.size() > this.clubs.size()) ? this.spades : this.clubs);
+ 		List<Card> ls;
+ 		if(clubs.size() != 0 && hearts.size()!=0 && diamonds.size()!=0 )
+ 			ls = this.clubs;
+ 		else
+ 			ls = ((this.spades.size() > this.clubs.size()) ? this.spades : this.clubs);
  		ls = ((ls.size() > this.hearts.size()) ?
  				ls : this.hearts);
  		ls = ((ls.size() > this.diamonds.size()) ?
  				ls : this.diamonds);
+
+		if(ls.size() == clubs.size()){
+			if((compare(ls.get(ls.size()-1), clubs.get(ls.size()-1)) > 0) || ls.get(0).suit == Suit.SPADES){ls = this.clubs;}
+		}
+		if(ls.size() == diamonds.size()){
+			if((compare(ls.get(ls.size()-1), diamonds.get(ls.size()-1)) > 0) || ls.get(0).suit == Suit.SPADES) {ls = this.diamonds;}
+		}
+		if(ls.size() == hearts.size()){
+			if((compare(ls.get(ls.size()-1), hearts.get(ls.size()-1)) > 0) || ls.get(0).suit == Suit.SPADES){ls = this.hearts;}
+		}
+		// if(ls.size() == spades.size()){
+		// 	if(compare(ls.get(ls.size()-1), spades.get(ls.size()-1)) > 0){ls = this.spades;}
+		// }
  		return ls;
 	}
+
+
 
 
  	/**
@@ -285,7 +308,7 @@ public class RationalAgentOM implements MSWAgent
 				// 	}
 				// if(pc == null)
 				// {
- 					pc = playingSuitReference.remove(0);
+ 					pc = playingSuitReference.remove(playingSuitReference.size()-1);
  					System.out.println("removed first... "+pc.toString());
 				//}
  				this.currentHand.remove(pc);
@@ -322,10 +345,11 @@ public class RationalAgentOM implements MSWAgent
 					else
 					{
 						// we are P2
-						// if(this.seenCards.size() == 1)
-						// {
-						// 	if(this.winProbability.get(playingSuitReference.get(i))  )
-						// }
+						 if(this.seenCards.size() == 1)
+						 {
+						 	if(this.winProbability.get(playingSuitReference.get(i)) < 0.99)
+						 	{continue;}
+						 }
 						pc = playingSuitReference.remove(i); //remove smallest required to win...
 						this.currentHand.remove(pc);
 						System.out.println("* Ha! found one. " + pc.toString());
