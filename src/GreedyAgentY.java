@@ -22,11 +22,13 @@ public class GreedyAgentY implements MSWAgent
 	private List<Card> clubs; //stores all the clubs in player's hand.
 	private List<Card> spades; //stores all the spades in player's hand.
 	private Comparator<Card> cardComparator; //a comparator to compare cards based on strength.
+	private String opponentOne;
+	private String opponentTwo;
 
 
 	/**
 	* Default Constructor, sets up the greedy agent by initializing all classfields.
-	* Name is set to "GR33D by abraram" by default.
+	* Name is set to "GR33D_WYE by abraram" by default.
 	*/
 	public GreedyAgentY()
 	{
@@ -97,44 +99,44 @@ public class GreedyAgentY implements MSWAgent
 	 * @return the difference between evaluated score of card 1 (c1) and/ (minus)
 	 * card 2, c2.
 	 */
-		public int compare(Card c1, Card c2)
-		{
-			System.out.println("* Comparing between... "+c1.toString() + " & " + c2.toString());
-			int mult1 = 1;
-			int mult2 = 1;
-			if(c1.suit == Suit.SPADES)
-				mult1 = 100;
-			if(c2.suit == Suit.SPADES)
-				mult2 = 100;
-			int score1 = mult1 * c1.rank;
-			int score2 = mult2 * c2.rank;
-			return score1 - score2;
-		}
+	public int compare(Card c1, Card c2)
+	{
+		System.out.println("* Comparing between... "+c1.toString() + " & " + c2.toString());
+		int mult1 = 1;
+		int mult2 = 1;
+		if(c1.suit == Suit.SPADES)
+			mult1 = 100;
+		if(c2.suit == Suit.SPADES)
+			mult2 = 100;
+		int score1 = mult1 * c1.rank;
+		int score2 = mult2 * c2.rank;
+		return score1 - score2;
+	}
 
 
-		/**
-		* Tells the agent the names of the competing agents, and their relative position.
-	  */
-	 	public void setup(String agentLeft, String agentRight)
-		{
-
-		}
+	/**
+	* Tells the agent the names of the competing agents, and their relative position.
+	*/
+	public void setup(String agentLeft, String agentRight)
+	{
+		this.opponentOne = agentLeft; this.opponentTwo = agentRight;
+	}
 
     /**
    	* Starts the round with a deal of the cards.
    	* The agent is told the cards they have (16 cards, or 20 if they are the leader)
    	* and the order they are playing (0 for the leader, 1 for the left of the leader,
-		* and 2 for the right of the leader).
+	* and 2 for the right of the leader).
    	*/
   	public void seeHand(List<Card> hand, int order)
-		{
+	{
 			this.currentHand = hand;
 			putCardsToSuitList();
-		}
+	}
 
 
   	/**
-		* A method for printing an array of cards, mainly used to
+	* A method for printing an array of cards, mainly used to
   	* Print discarded cards for debugging.
   	* @param dc discarded cards array of size 4.
   	*/
@@ -173,7 +175,7 @@ public class GreedyAgentY implements MSWAgent
    	* If the agent is not the leader, it is sufficient to return an empty array.
    	*/
   	public Card[] discard()
-		{
+	{
 			Collections.sort(currentHand, cardComparator);
 
 			Card discardArr[] = new Card[4];
@@ -184,7 +186,7 @@ public class GreedyAgentY implements MSWAgent
 			printDiscardArray(discardArr);
 			putCardsToSuitList();
 			return discardArr;
-		}
+	}
 
 	/**
 	 * Returns the largest suit in Agent's hand. If the 2 suits are of equal size,
@@ -193,31 +195,31 @@ public class GreedyAgentY implements MSWAgent
 	 */
  	private List<Card> findLargestSuitInHand()
  	{
- 		Collections.sort(this.hearts, cardComparator); Collections.sort(this.diamonds, cardComparator);
- 		Collections.sort(this.spades, cardComparator); Collections.sort(this.clubs, cardComparator);
- 		List<Card> ls;
- 		if(clubs.size() != 0 && hearts.size()!=0 && diamonds.size()!=0 )
- 			ls = this.clubs;
- 		else
- 			ls = ((this.spades.size() > this.clubs.size()) ? this.spades : this.clubs);
- 		ls = ((ls.size() > this.hearts.size()) ?
- 				ls : this.hearts);
- 		ls = ((ls.size() > this.diamonds.size()) ?
- 				ls : this.diamonds);
+	 		Collections.sort(this.hearts, cardComparator); Collections.sort(this.diamonds, cardComparator);
+	 		Collections.sort(this.spades, cardComparator); Collections.sort(this.clubs, cardComparator);
+	 		List<Card> ls;
+	 		if(clubs.size() != 0 && hearts.size()!=0 && diamonds.size()!=0 )
+	 			ls = this.clubs;
+	 		else
+	 			ls = ((this.spades.size() > this.clubs.size()) ? this.spades : this.clubs);
+	 		ls = ((ls.size() > this.hearts.size()) ?
+	 				ls : this.hearts);
+	 		ls = ((ls.size() > this.diamonds.size()) ?
+	 				ls : this.diamonds);
 
-		if(ls.size() == clubs.size()){
-			if((compare(ls.get(ls.size()-1), clubs.get(ls.size()-1)) > 0) || ls.get(0).suit == Suit.SPADES){ls = this.clubs;}
-		}
-		if(ls.size() == diamonds.size()){
-			if((compare(ls.get(ls.size()-1), diamonds.get(ls.size()-1)) > 0) || ls.get(0).suit == Suit.SPADES) {ls = this.diamonds;}
-		}
-		if(ls.size() == hearts.size()){
-			if((compare(ls.get(ls.size()-1), hearts.get(ls.size()-1)) > 0) || ls.get(0).suit == Suit.SPADES){ls = this.hearts;}
-		}
-		// if(ls.size() == spades.size()){
-		// 	if(compare(ls.get(ls.size()-1), spades.get(ls.size()-1)) > 0){ls = this.spades;}
-		// }
- 		return ls;
+			if(ls.size() == clubs.size()){
+				if((compare(ls.get(ls.size()-1), clubs.get(ls.size()-1)) > 0) || ls.get(0).suit == Suit.SPADES){ls = this.clubs;}
+			}
+			if(ls.size() == diamonds.size()){
+				if((compare(ls.get(ls.size()-1), diamonds.get(ls.size()-1)) > 0) || ls.get(0).suit == Suit.SPADES) {ls = this.diamonds;}
+			}
+			if(ls.size() == hearts.size()){
+				if((compare(ls.get(ls.size()-1), hearts.get(ls.size()-1)) > 0) || ls.get(0).suit == Suit.SPADES){ls = this.hearts;}
+			}
+			// if(ls.size() == spades.size()){
+			// 	if(compare(ls.get(ls.size()-1), spades.get(ls.size()-1)) > 0){ls = this.spades;}
+			// }
+	 		return ls;
 	}
 
 
@@ -324,25 +326,25 @@ public class GreedyAgentY implements MSWAgent
    	* @param agent, the name of the agent who played the card.
    	*/
   	public void seeCard(Card card, String agent)
-		{
-  		if(agent.equals(this.name) == false)
+	{
+  		if(agent.equals(this.opponentOne) || agent.equals(this.opponentTwo))
   		{
   			checkForRoundCompletion();
   			seenCards.add(card);
   			this.turn++;
   		}
-		}
+	}
 
   	/**
    	* See the result of the trick.
    	* A 50 ms timelimit is given to this method.
    	* This method will be called on each eagent at the end of each trick.
    	* @param winner, the player who played the winning card.
-   	* */
-		public void seeResult(String winner)
-		{
-			//TODO
-		}
+   	**/
+	public void seeResult(String winner)
+	{			
+	
+	}
 
   	/**
    	* See the score for each player.
@@ -350,9 +352,9 @@ public class GreedyAgentY implements MSWAgent
   	* @param scoreboard, a Map from agent names to their score.
    	**/
   	public void seeScore(Map<String, Integer> scoreboard)
-		{
-			//TODO
-		}
+	{		
+
+	}
 
   	/**
    	* Returns the Agents name.
@@ -361,7 +363,7 @@ public class GreedyAgentY implements MSWAgent
 		* @return the name of the agent.
    	*/
   	public String sayName()
-		{
+	{
 			return this.name;
-		}
+	}
 }
