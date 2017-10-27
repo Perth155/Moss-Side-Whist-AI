@@ -2,13 +2,13 @@ import java.util.*;
 import java.lang.RuntimeException;
 import java.security.InvalidParameterException;
 
-public class MSWAgentImp implements MSWAgent{
+public class Agent21709566 implements MSWAgent{
     private String leftAgent;
     private String rightAgent;
     private GameState gameState;
     private String name;
 
-    public MSWAgentImp() {
+    public Agent21709566() {
         this.name = "Monte Carlo";
     }
 
