@@ -2,6 +2,8 @@ import java.util.*;
 import java.lang.RuntimeException;
 import java.security.InvalidParameterException;
 
+
+
 public class MSWAgentImp implements MSWAgent{
     private String leftAgent;
     private String rightAgent;
@@ -240,12 +242,7 @@ public class MSWAgentImp implements MSWAgent{
             MCTNode bestNode = null;
             double bestNodeScore = -1;
             for (MCTNode child: rootNode.getChildren()){
-                double score;
-                if (child.getnVisits() != 0) {
-                    score = (double)child.getnWins() / child.getnVisits();
-                } else {
-                    score = 0;
-                }
+                double score = (double)child.getnWins() / child.getnVisits();
                 System.out.print("(" + child.getPlayedCard() + ", " + score + "), ");
                 if (score > bestNodeScore) {
                     bestNode = child;
@@ -353,68 +350,47 @@ public class MSWAgentImp implements MSWAgent{
             GameState state = node.getState();
             List<Card> playedCards = state.getPlayedCards();
             int playerTurn = state.getPlayerTurn();
-            int opponentTurn1 = (playerTurn + 1) % 3;
-            int opponentTurn2 = (playerTurn + 2) % 3;
             Card playerCard = playedCards.get(playerTurn);
             List<Card> remainingCards = state.getRemainingCards();
-
             int nRemaining = remainingCards.size();
-            int handSize = Math.max(1, state.getPlayersCards().size());
-            List<Card> hand2;
 
             Random r = new Random();
             CardComparator cc = new CardComparator();
-
             Card card1 = null;
-            try {
-                card1 = playedCards.get(opponentTurn1);
-            } catch (IndexOutOfBoundsException e ) {
-                // Opponent has not gone yet.
-                // Deal a random hand and play a random valid card.
-                List<Card> hand = new ArrayList<Card>(0);
-                while (hand.size() < handSize) {
-                    Card randomCard = remainingCards.get(r.nextInt(nRemaining));
-                    while (hand.contains(randomCard)){
-                        randomCard = remainingCards.get(r.nextInt(nRemaining));
-                    }
-                    hand.add(randomCard);
-                }  
-                List<Card> legalCards = new ArrayList<Card>();
-                for (Card card: hand) {
-                    legalCards.add(card);
-                }
-                if (legalCards.size() != 0) {
-                    card1 = legalCards.get(r.nextInt(legalCards.size()));     
-                } else {
-                    card1 = hand.get(r.nextInt(hand.size()));     
-                }
-            }
-
             Card card2 = null;
-            try {
-                card2 = playedCards.get(opponentTurn2);
-            } catch (IndexOutOfBoundsException e ) {
-                // Opponent has not gone yet.
-                // Deal a random hand and play a random valid card.
-                List<Card> hand = new ArrayList<Card>(0);
-                while (hand.size() < handSize) {
-                    Card randomCard = remainingCards.get(r.nextInt(nRemaining));
-                    while (hand.contains(randomCard)){
-                        randomCard = remainingCards.get(r.nextInt(nRemaining));
-                    }
-                    hand.add(randomCard);
-                }  
-                List<Card> legalCards = new ArrayList<Card>();
-                for (Card card: hand) {
-                    legalCards.add(card);
-                }
-                if (legalCards.size() != 0) {
-                    card2 = legalCards.get(r.nextInt(legalCards.size()));     
-                } else {
-                    card2 = hand.get(r.nextInt(hand.size()));    
-                } 
-            }
 
+            switch (playerTurn) {
+                case 0:
+                    try {
+                        card1 = playedCards.get(1);
+                    } catch (IndexOutOfBoundsException e) {
+                        card1 = remainingCards.get(r.nextInt(nRemaining));
+                    }
+                    card2 = card1;
+                    while (card2 == card1) {
+                        try {
+                            card2 = playedCards.get(2);
+                        } catch (IndexOutOfBoundsException e) {
+                            card2 = remainingCards.get(r.nextInt(nRemaining));
+                        }
+                    }
+                    break;
+                case 1:
+                    card1 = playedCards.get(0);
+                    card2 = card1;
+                    while (card2 == card1) {
+                        try {
+                            card2 = playedCards.get(2);
+                        } catch (IndexOutOfBoundsException e) {
+                            card2 = remainingCards.get(r.nextInt(nRemaining));
+                        }
+                    }
+                    break;
+                case 2:
+                    card1 = playedCards.get(0);
+                    card2 = playedCards.get(1);
+                    break;
+            }
             return cc.compare(playerCard, card1) > 0 &&
                    cc.compare(playerCard, card2) > 0;
         }
@@ -464,7 +440,7 @@ public class MSWAgentImp implements MSWAgent{
         public MCTNode(MCTNode parent, GameState state){
             this.parent = parent;
             this.state = state;
-            nVisits = 0;
+            nVisits = 1;
             nWins = 0;
             children = new ArrayList<MCTNode>();
         }
@@ -481,14 +457,8 @@ public class MSWAgentImp implements MSWAgent{
         * @return The upper confidence bound of this node
         */
         public double getUpperConfidenceBound() {
-            double winScore;
-            if (nVisits != 0) {
-                winScore = (double)nWins / nVisits;
-            } else {
-                winScore = 0;
-            }
-
-            double c = 1.4;
+            double winScore = (double)nWins / (double)nVisits;
+            double c = 1.0;
             double lnt = Math.log(parent.getnVisits());
             double ucb = winScore + c * Math.sqrt(lnt/nVisits);
             return ucb;
