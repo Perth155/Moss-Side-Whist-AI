@@ -1,8 +1,11 @@
 /**
- * A rule-based greedy agent that attempts to make the best decisions at each trick
+ * A rule-based Greedy Agent that attempts to make the best decisions at each trick
+ * (locally optimal decisions)
  * by following the heuristic of attempting to remove the highest scoring card from the
- * biggest suit in hand if leader,
+ * biggest non-spade suit in hand if leader, Else playing the lowest possible card to win
+ * if that is not possible, discarding the lowest possible legal card.
  * @author Abrar Amin (abrar.a.amin@gmail.com)
+ * @author Robbie Fernandez ()
  */
 
 import java.util.Map;
@@ -30,7 +33,7 @@ public class GreedyAgentX implements MSWAgent
 	*/
 	public GreedyAgentX()
 	{
-		this.name = "G33D_EX by abraram";
+		this.name = "GR33D_EX by abraram";
 		setGreedyAgent();
 	}
 
@@ -42,7 +45,7 @@ public class GreedyAgentX implements MSWAgent
 	public GreedyAgentX(String providedName)
 	{
 		if(providedName.equals(""))
-				this.name = "G0PT_X by abraram";
+				this.name = "GR33D_EX by abraram";
 		else
 			this.name = providedName;
 		setGreedyAgent();
@@ -94,62 +97,60 @@ public class GreedyAgentX implements MSWAgent
 	 * values of c1 and c2.
 	 * @param c1 the first Card object.
 	 * @param c2 the second Card object.
-	 * @return the difference between evaluated score of card 1 (c1) and/ (minus)
-	 * card 2, c2.
+	 * @return the difference between evaluated score of card 1 (c1) and/ (minus) card 2, c2.
 	 */
-		public int compare(Card c1, Card c2)
-		{
-			System.out.println("* Comparing between... "+c1.toString() + " & " + c2.toString());
-			int mult1 = 1;
-			int mult2 = 1;
-			if(c1.suit == Suit.SPADES)
-				mult1 = 100;
-			if(c2.suit == Suit.SPADES)
-				mult2 = 100;
-			int score1 = mult1 * c1.rank;
-			int score2 = mult2 * c2.rank;
-			return score1 - score2;
-		}
+	public int compare(Card c1, Card c2)
+	{
+		System.out.println("* Comparing between... "+c1.toString() + " & " + c2.toString());
+		int mult1 = 1;
+		int mult2 = 1;
+		if(c1.suit == Suit.SPADES)
+			mult1 = 100;
+		if(c2.suit == Suit.SPADES)
+			mult2 = 100;
+		int score1 = mult1 * c1.rank;
+		int score2 = mult2 * c2.rank;
+		return score1 - score2;
+	}
 
 
-		/**
-		* Tells the agent the names of the competing agents, and their relative position.
-	  */
-	 	public void setup(String agentLeft, String agentRight)
-		{
-
-		}
+	/**
+	* Tells the agent the names of the competing agents, and their relative position.
+	*/
+	public void setup(String agentLeft, String agentRight)
+	{
+		
+	}
 
     /**
    	* Starts the round with a deal of the cards.
    	* The agent is told the cards they have (16 cards, or 20 if they are the leader)
    	* and the order they are playing (0 for the leader, 1 for the left of the leader,
-		* and 2 for the right of the leader).
+	* and 2 for the right of the leader).
    	*/
   	public void seeHand(List<Card> hand, int order)
-		{
-			this.currentHand = hand;
-			putCardsToSuitList();
-		}
+	{
+		this.currentHand = hand;
+		putCardsToSuitList();
+	}
 
 
   	/**
-		* A method for printing an array of cards, mainly used to
+	* A method for printing an array of cards, mainly used to
   	* Print discarded cards for debugging.
   	* @param dc discarded cards array of size 4.
   	*/
   	private void printDiscardArray(Card[] dc)
   	{
-  		System.out.println("-----------------\nDiscarded\n-----------------");
   		for(int i = 0; i < dc.length; i++)
   		{
   			System.out.println(dc[i].toString());
   		}
-
 	}
 
   	/**
-  	* Cards are allocated to their relevant list of suits.
+  	* Cards are allocated to their relevant list of suits. This helps when
+  	* agent has to play card from a specific suit.
   	*/
   	private void putCardsToSuitList()
   	{
@@ -171,26 +172,29 @@ public class GreedyAgentX implements MSWAgent
   	/**
    	* This method will be called on the leader agent, after the deal.
    	* If the agent is not the leader, it is sufficient to return an empty array.
+   	* Works by removing the lowest ranked 4 cards hand according to the Comparator
+   	* class Object cardComparator declared above.
+   	* @return discardArr an array of cards that are to be discarded.
    	*/
   	public Card[] discard()
-		{
-			Collections.sort(currentHand, cardComparator);
+	{
+		Collections.sort(currentHand, cardComparator);
 
-			Card discardArr[] = new Card[4];
-			for(int i = 0; i < discardArr.length; i++)
-			{
-				discardArr[i] = currentHand.remove(0);
-			}
-			printDiscardArray(discardArr);
-			putCardsToSuitList();
-			return discardArr;
+		Card discardArr[] = new Card[4];
+		for(int i = 0; i < discardArr.length; i++)
+		{
+			discardArr[i] = currentHand.remove(0);
+		}
+		printDiscardArray(discardArr);
+		putCardsToSuitList();
+		return discardArr;
 		}
 
 	/**
-	 * Returns the largest suit in Agent's hand. If the 2 suits are of equal size,
-	 * return the list of suit with the smaller stronger card.
-	 * @return list of cards belonging to the largest suit in hand.
-	 */
+	* Returns the largest suit in Agent's hand. If the 2 suits are of equal size,
+	* return the list of suit with the smaller stronger card.
+	* @return list of cards belonging to the largest suit in hand.
+	*/
  	private List<Card> findLargestSuitInHand()
  	{
  		Collections.sort(this.hearts, cardComparator); Collections.sort(this.diamonds, cardComparator);
@@ -210,28 +214,28 @@ public class GreedyAgentX implements MSWAgent
 		if(ls.size() == hearts.size()){
 			if((compare(ls.get(ls.size()-1), hearts.get(ls.size()-1)) > 0) || ls.get(0).suit == Suit.SPADES){ls = this.hearts;}
 		}
-		// if(ls.size() == spades.size()){
-		// 	if(compare(ls.get(ls.size()-1), spades.get(ls.size()-1)) > 0){ls = this.spades;}
-		// }
+
  		return ls;
 	}
 
 
  	/**
  	 * Check to see if a round has been completed. I.e. all 3 cards have been played.
+ 	 * And hence the seenCards list will be cleared.
  	 */
-	private void checkForRoundCompletion() {
+	private void checkForRoundCompletion() 
+	{
 		if(this.turn == 3)
 		{
 			this.turn = 0;
 			seenCards.clear();
-			System.out.println("\n========Trick Complete=======\n");
 		}
 	}
 
 
 	/**
 	* A method that can be called to print out the cards on the agent's hand.
+	* Mainly used for debugging.
 	*/
 	private void printHand()
 	{
@@ -244,25 +248,56 @@ public class GreedyAgentX implements MSWAgent
 	}
 
 
+	/**
+	 * This method keeps track the best possible move to play in case Agent does not have the card
+	 * belonging to the leader's suit. Heuristics involve If possible try to play a trump card and win
+	 * else play the lowest value card in hand.
+	 * @return outCard, the best possible legal card to get rid of in case Agent does not have leader's played suit.
+	 */
+	public Card noCardOfLeadersSuitFallback()
+	{
+		Card outCard = null;
+		Collections.sort(currentHand, cardComparator);
+		if(spades.size() == 0){
+			outCard = currentHand.remove(0); //the weakest card we have...
+		}else {
+			Collections.sort(spades, cardComparator); // Spades clause... try and win. Compare largest spade seen with largest card that has been played..
+			if(this.compare( spades.get(spades.size()-1), seenCards.get(seenCards.size()-1)) < 0)
+				outCard = currentHand.remove(0); //strongest spade in hand is weaker than a spade that has been played, play weakest card.
+			else {
+				for(int i = 0; i < spades.size(); i++)
+				{
+					if(this.compare( spades.get(i), seenCards.get(seenCards.size()-1)) > 0)
+					{
+						outCard = spades.remove(i); //if P2 played a Spade, we want to beat that too, if possible.
+					}
+				}
+			}
+		} 
+		return outCard;
+	}
 
 	/**
    	* Agent returns the card they wish to play.
-   	* A 200 ms timelimit is given for this method
+   	* A 200 ms timelimit is given for this method.
+   	* This method implements the above mentioned heuristic to make the best 
+   	* possible choice locally.
    	* @return the Card they wish to play.
   	*/
  	public Card playCard()
 	{
  		checkForRoundCompletion(); //check if the round has been completed...
  		List<Card> playingSuitReference = findLargestSuitInHand(); //stores the reference to the list of card we play from.
- 		Card pc = null; //play card
- 		// we are the leader --
- 		if(this.turn == 0){
+ 		Card pc = null; // play card
+ 		// If we are the leader, play the strongest card of the non-Ace largest suit.
+ 		if(this.turn == 0)
+ 		{
  				pc = playingSuitReference.remove(playingSuitReference.size()-1);
- 				System.out.println("removed first... "+pc.toString());
- 				this.currentHand.remove(pc);
- 		}else {
- 			Suit targetSuit = seenCards.get(0).suit; //Suit played by the leader, our target...
-			Collections.sort(seenCards, cardComparator);
+ 		} //else we are not the leader and are playing on either position 2 or 3.
+ 		else 
+ 		{
+ 			Suit targetSuit = seenCards.get(0).suit;  //Suit played by the leader, our target...
+			Collections.sort(seenCards, cardComparator); //sort the seen card list, so that the last seen card is now the strongest card to be played.
 			if(targetSuit == Suit.CLUBS) {playingSuitReference = clubs;}
 			else if(targetSuit == Suit.SPADES) {playingSuitReference = spades;}
 			else if(targetSuit == Suit.HEARTS) {playingSuitReference = hearts;}
@@ -270,18 +305,7 @@ public class GreedyAgentX implements MSWAgent
 
 			// Don't have the suit we should be playing.
 			if(playingSuitReference.size() == 0){
-				Collections.sort(currentHand, cardComparator);
-				if(spades.size() == 0){
-					pc = currentHand.remove(0); //the weakest card we have...
-				}else {
-					Collections.sort(spades, cardComparator); // Spades clause... try and win. Compare largest spade seen with largest card that has been played..
-					if(this.compare( spades.get(spades.size()-1), seenCards.get(seenCards.size()-1)) < 0)
-						pc = currentHand.remove(0);
-					else {
-						pc = spades.remove(0);
-						currentHand.remove(pc);
-					}
-				} // else we do have the suit that the leader played. And must play from that...
+				pc = noCardOfLeadersSuitFallback();
 			} else {
 				boolean playCardFound = false;
 				Collections.sort(playingSuitReference, cardComparator);
@@ -292,20 +316,20 @@ public class GreedyAgentX implements MSWAgent
 					else
 					{
 						pc = playingSuitReference.remove(i); //remove smallest required to win...
-						this.currentHand.remove(pc);
 						System.out.println("* Ha! found one. " + pc.toString());
 						playCardFound = true;
 						break;
 					}
 				}
-				if(!playCardFound) {
+				if(!playCardFound) 
+				{
 					pc = playingSuitReference.get(0);
 					System.out.println("* Meh.. You win. " + pc.toString());
-					this.currentHand.remove(pc);
 				}
 			}
  		}
  		printHand();
+ 		this.currentHand.remove(pc);
  		putCardsToSuitList();
  		this.turn++;
  		return pc;
@@ -335,10 +359,10 @@ public class GreedyAgentX implements MSWAgent
    	* This method will be called on each eagent at the end of each trick.
    	* @param winner, the player who played the winning card.
    	* */
-		public void seeResult(String winner)
-		{
-			//TODO
-		}
+	public void seeResult(String winner)
+	{
+	
+	}
 
   	/**
    	* See the score for each player.
@@ -346,18 +370,18 @@ public class GreedyAgentX implements MSWAgent
   	* @param scoreboard, a Map from agent names to their score.
    	**/
   	public void seeScore(Map<String, Integer> scoreboard)
-		{
-			//TODO
-		}
+	{
+  		
+	}
 
   	/**
    	* Returns the Agents name.
    	* A 10ms timelimit is given here.
    	* This method will only be called once.
-		* @return the name of the agent.
+	* @return the name of the agent.
    	*/
   	public String sayName()
-		{
-			return this.name;
-		}
+	{
+		return this.name;
+	}
 }

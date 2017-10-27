@@ -1,37 +1,59 @@
 /**
- * A rule-based greedy agent that attempts to make the best decisions at each trick  based on
- * accounting for probabilities of what the opponents likely have on their hand based on users
- * hand and the cards that has been played.
+ * A rule-based greedy agent that attempts to make the best decisions at each trick
+ * by following the heuristic of attempting to remove the highest scoring card from the
+ * biggest suit in hand if leader,
  * @author Abrar Amin (abrar.a.amin@gmail.com)
  */
 
-import java.util.Arrays;
 import java.util.Map;
 import java.util.List;
 import java.util.LinkedList;
-import java.util.HashMap;
 import java.util.Collections;
 import java.util.Comparator;
 
-public class RationalAgentOM implements MSWAgent
+public class GreedyAgentY implements MSWAgent
 {
-	private String name;
+	private String name; //name of the agent.
 	private List<Card> seenCards; //stores the current hand of the player.
 	private int turn; //stores how many cards have been played out of 3 players...
-	private List<Card> currentHand; //stores the cards in player's hand.
-	private List<Card> hearts;
-	private List<Card> diamonds;
-	private List<Card> clubs;
-	private List<Card> spades;
-	private Map<Card, Double> winProbability;
-	private List<Card> cardsInPlay;
-	private Comparator<Card> cardComparator;
+	private List<Card> currentHand; //stores the cards in player's hand, reset at each round.
+	private List<Card> hearts; //stores all the hearts in player's hand.
+	private List<Card> diamonds; //stores all the diamonds in player's hand.
+	private List<Card> clubs; //stores all the clubs in player's hand.
+	private List<Card> spades; //stores all the spades in player's hand.
+	private Comparator<Card> cardComparator; //a comparator to compare cards based on strength.
 
 
-
-	public RationalAgentOM()
+	/**
+	* Default Constructor, sets up the greedy agent by initializing all classfields.
+	* Name is set to "GR33D by abraram" by default.
+	*/
+	public GreedyAgentY()
 	{
-		this.name = "Pr0Bz by abraram";
+		this.name = "GR33D_WYE by abraram";
+		setGreedyAgent();
+	}
+
+	/**
+	* Constructor, sets up the greedy agent by initializing all classfields.
+	* Name is set to String argument provided.
+	* @param providedName specify the agent's name. Set to defaults if empty string.
+	*/
+	public GreedyAgentY(String providedName)
+	{
+		if(providedName.equals(""))
+				this.name = "GR33D_WYE by abraram";
+		else
+			this.name = providedName;
+		setGreedyAgent();
+	}
+
+
+	/**
+	* Initialize all the classfields of Greedy Agent. To be called by Constructor.
+	*/
+	public void setGreedyAgent()
+	{
 		this.turn = 0;
 		this.seenCards = new LinkedList<Card>();
 		this.currentHand = new LinkedList<Card>();
@@ -39,15 +61,14 @@ public class RationalAgentOM implements MSWAgent
 		this.spades = new LinkedList<Card>();
 		this.hearts = new LinkedList<Card>();
 		this.diamonds = new LinkedList<Card>();
-		this.cardsInPlay = new LinkedList<Card>(Arrays.asList(Card.values()));
-		this.winProbability = new HashMap<Card, Double>();
 		initCardComparator();
 	}
 
-
 	/**
-	 * Initializes the comparator object for ranking a list of cards
-	 * from lowest to highest values.
+	 * Initializes the comparator object for ordering a list of cards
+	 * from lowest to highest values. All cards with the same value is considered
+	 * equal irrespective of suits, with the exception of Spades,
+	 * which are ranked higher than any other card from any other suits.
 	 */
 	private void initCardComparator()
 	{
@@ -68,92 +89,55 @@ public class RationalAgentOM implements MSWAgent
 	}
 
 
-
 	/**
-	* A method that assigns a win probability to a card based on
-	*
-	*/
-	private void assignWinProbability()
-	{
-		for(int x = 0; x < this.currentHand.size(); x++)
-		{
-			Card currentCard = this.currentHand.get(x);
-			int winsProb = 1, totalProb = 1;
-			System.out.println("size : "+cardsInPlay.size());
-			for(int y = 0; y < this.cardsInPlay.size(); y++)
-			{
-				// if a card that can bee played is of a greater value than the
-				// card we are assigning probability to
-				if((currentCard.suit != cardsInPlay.get(y).suit))
-					continue;
-				else
-					totalProb++;
-				if(compare(cardsInPlay.get(y), currentCard) < 0)
-				{
-					winsProb++;
-				}
-			}
-
-			this.winProbability.put(currentCard, ((double)winsProb/(double)totalProb));
-		}
-	}
-
-
-	/**
-	 * Compare 2 cards, return first card value minus second card value...
-	 *
-	 * @param c1
-	 * @param c2
-	 * @return
+	 * Compare 2 cards, c1 and c2 return the difference between the comparison
+	 * values of c1 and c2.
+	 * @param c1 the first Card object.
+	 * @param c2 the second Card object.
+	 * @return the difference between evaluated score of card 1 (c1) and/ (minus)
+	 * card 2, c2.
 	 */
-	public int compare(Card c1, Card c2)
-	{
-		//System.out.println("* Comparing between... "+c1.toString() + " & " + c2.toString());
-		int mult1 = 1;
-		int mult2 = 1;
-		if(c1.suit == Suit.SPADES)
-			mult1 = 100;
-		if(c2.suit == Suit.SPADES)
-			mult2 = 100;
-		int score1 = mult1 * c1.rank;
-		int score2 = mult2 * c2.rank;
-		return score1 - score2;
-	}
+		public int compare(Card c1, Card c2)
+		{
+			System.out.println("* Comparing between... "+c1.toString() + " & " + c2.toString());
+			int mult1 = 1;
+			int mult2 = 1;
+			if(c1.suit == Suit.SPADES)
+				mult1 = 100;
+			if(c2.suit == Suit.SPADES)
+				mult2 = 100;
+			int score1 = mult1 * c1.rank;
+			int score2 = mult2 * c2.rank;
+			return score1 - score2;
+		}
 
 
-	/**
-	* Tells the agent the names of the competing agents, and their relative position.
-  	* */
- 	public void setup(String agentLeft, String agentRight)
-	{
+		/**
+		* Tells the agent the names of the competing agents, and their relative position.
+	  */
+	 	public void setup(String agentLeft, String agentRight)
+		{
 
-	}
+		}
 
     /**
    	* Starts the round with a deal of the cards.
    	* The agent is told the cards they have (16 cards, or 20 if they are the leader)
-   	* and the order they are playing (0 for the leader, 1 for the left of the leader, and 2 for the right of the leader).
-   	* Agent gets rid of the cards that have been obtained from the cardsInPlay list to track the cards that haven't been
-   	* played as of yet.
-   	* @param hand the hand allocated to the agent as a List.
-   	* @param order an integer representing the order of that the player is playing, 0 if first, 2 if last.
+   	* and the order they are playing (0 for the leader, 1 for the left of the leader,
+		* and 2 for the right of the leader).
    	*/
   	public void seeHand(List<Card> hand, int order)
-	{
-		this.currentHand = hand;
-		putCardsToSuitList();
-		for(int i = 0; i < hand.size(); i++)
 		{
-			this.cardsInPlay.remove(hand.get(i)); //get rid of the cards that can be potentially played against us.
+			this.currentHand = hand;
+			putCardsToSuitList();
 		}
-	}
 
 
   	/**
-  	 * A function that can be used to print an array of Card objects.
-  	 * Used to print discarded cards to help debug.
-  	 * @param dc discarded cards array of size 4.
-  	 */
+		* A method for printing an array of cards, mainly used to
+  	* Print discarded cards for debugging.
+  	* @param dc discarded cards array of size 4.
+  	*/
   	private void printDiscardArray(Card[] dc)
   	{
   		System.out.println("-----------------\nDiscarded\n-----------------");
@@ -164,11 +148,9 @@ public class RationalAgentOM implements MSWAgent
 
 	}
 
-  	//draw out strong spades of opponents by playing weak spades. Look into this...
-
   	/**
-  	 * Cards are allocated to their relevant list of suits.
-  	 */
+  	* Cards are allocated to their relevant list of suits.
+  	*/
   	private void putCardsToSuitList()
   	{
   		clubs.clear(); diamonds.clear(); hearts.clear(); spades.clear();
@@ -191,32 +173,50 @@ public class RationalAgentOM implements MSWAgent
    	* If the agent is not the leader, it is sufficient to return an empty array.
    	*/
   	public Card[] discard()
-	{
-		Collections.sort(currentHand, cardComparator);
-
-		Card discardArr[] = new Card[4];
-		for(int i = 0; i < discardArr.length; i++)
 		{
-			discardArr[i] = currentHand.remove(0);
+			Collections.sort(currentHand, cardComparator);
+
+			Card discardArr[] = new Card[4];
+			for(int i = 0; i < discardArr.length; i++)
+			{
+				discardArr[i] = currentHand.remove(0);
+			}
+			printDiscardArray(discardArr);
+			putCardsToSuitList();
+			return discardArr;
 		}
-		printDiscardArray(discardArr);
-		putCardsToSuitList();
-		return discardArr;
-	}
 
 	/**
-	 * Returns the largest suit in Agent's hand.
-	 * @return
+	 * Returns the largest suit in Agent's hand. If the 2 suits are of equal size,
+	 * return the list of suit with the smaller stronger card.
+	 * @return list of cards belonging to the largest suit in hand.
 	 */
  	private List<Card> findLargestSuitInHand()
  	{
  		Collections.sort(this.hearts, cardComparator); Collections.sort(this.diamonds, cardComparator);
  		Collections.sort(this.spades, cardComparator); Collections.sort(this.clubs, cardComparator);
- 		List<Card> ls = ((this.spades.size() > this.clubs.size()) ? this.spades : this.clubs);
+ 		List<Card> ls;
+ 		if(clubs.size() != 0 && hearts.size()!=0 && diamonds.size()!=0 )
+ 			ls = this.clubs;
+ 		else
+ 			ls = ((this.spades.size() > this.clubs.size()) ? this.spades : this.clubs);
  		ls = ((ls.size() > this.hearts.size()) ?
  				ls : this.hearts);
  		ls = ((ls.size() > this.diamonds.size()) ?
  				ls : this.diamonds);
+
+		if(ls.size() == clubs.size()){
+			if((compare(ls.get(ls.size()-1), clubs.get(ls.size()-1)) > 0) || ls.get(0).suit == Suit.SPADES){ls = this.clubs;}
+		}
+		if(ls.size() == diamonds.size()){
+			if((compare(ls.get(ls.size()-1), diamonds.get(ls.size()-1)) > 0) || ls.get(0).suit == Suit.SPADES) {ls = this.diamonds;}
+		}
+		if(ls.size() == hearts.size()){
+			if((compare(ls.get(ls.size()-1), hearts.get(ls.size()-1)) > 0) || ls.get(0).suit == Suit.SPADES){ls = this.hearts;}
+		}
+		// if(ls.size() == spades.size()){
+		// 	if(compare(ls.get(ls.size()-1), spades.get(ls.size()-1)) > 0){ls = this.spades;}
+		// }
  		return ls;
 	}
 
@@ -234,7 +234,9 @@ public class RationalAgentOM implements MSWAgent
 	}
 
 
-
+	/**
+	* A method that can be called to print out the cards on the agent's hand.
+	*/
 	private void printHand()
 	{
 		System.out.println("The hand : ");
@@ -247,20 +249,6 @@ public class RationalAgentOM implements MSWAgent
 
 
 
-	private void printWinProbability()
-	{
-		System.out.println("card   probability");
-		for(Card c: this.winProbability.keySet())
-		{
-			String key = c.toString();
-			double val = this.winProbability.get(c);
-			System.out.println(key + "  " + val);
-		}
-		System.out.println(" +++ ");
-	}
-
-
-
 	/**
    	* Agent returns the card they wish to play.
    	* A 200 ms timelimit is given for this method
@@ -268,42 +256,29 @@ public class RationalAgentOM implements MSWAgent
   	*/
  	public Card playCard()
 	{
- 		printHand();
- 		checkForRoundCompletion();
- 		assignWinProbability();
- 		printWinProbability();
- 		List<Card> playingSuitReference = findLargestSuitInHand();
+ 		checkForRoundCompletion(); //check if the round has been completed...
+ 		List<Card> playingSuitReference = findLargestSuitInHand(); //stores the reference to the list of card we play from.
  		Card pc = null; //play card
- 		// we are the leader --- if spades is the largest suit in hand, play the weakest spade first??
+ 		// we are the leader --
  		if(this.turn == 0){
-	 			for(Card c: this.winProbability.keySet())
-	 			{
-	 				Card key = c;
-	 				double val = this.winProbability.get(c);
-	 				if(val > 0.99){pc = c; System.out.println("Found a good one.. "); break; }
-	 			}
-				if(pc != null)
-				{
- 					pc = playingSuitReference.remove(playingSuitReference.size()-1);
- 					System.out.println("removed first... "+pc.toString());
-				}
+ 				pc = playingSuitReference.remove(playingSuitReference.size()-1);
+ 				System.out.println("removed first... "+pc.toString());
  				this.currentHand.remove(pc);
  		}else {
- 			Suit targetSuit = seenCards.get(0).suit;
+ 			Suit targetSuit = seenCards.get(0).suit; //Suit played by the leader, our target...
 			Collections.sort(seenCards, cardComparator);
 			if(targetSuit == Suit.CLUBS) {playingSuitReference = clubs;}
 			else if(targetSuit == Suit.SPADES) {playingSuitReference = spades;}
 			else if(targetSuit == Suit.HEARTS) {playingSuitReference = hearts;}
 			else {playingSuitReference = diamonds;}
 
-			// don't have the suit we should play.
+			// Don't have the suit we should be playing.
 			if(playingSuitReference.size() == 0){
 				Collections.sort(currentHand, cardComparator);
 				if(spades.size() == 0){
 					pc = currentHand.remove(0); //the weakest card we have...
 				}else {
-
-					Collections.sort(spades, cardComparator); //Spades clause... try and win.
+					Collections.sort(spades, cardComparator); // Spades clause... try and win. Compare largest spade seen with largest card that has been played..
 					if(this.compare( spades.get(spades.size()-1), seenCards.get(seenCards.size()-1)) < 0)
 						pc = currentHand.remove(0);
 					else {
@@ -336,7 +311,6 @@ public class RationalAgentOM implements MSWAgent
  		}
  		printHand();
  		putCardsToSuitList();
- 		this.winProbability.remove(pc);
  		this.turn++;
  		return pc;
 	}
@@ -350,18 +324,14 @@ public class RationalAgentOM implements MSWAgent
    	* @param agent, the name of the agent who played the card.
    	*/
   	public void seeCard(Card card, String agent)
-	{
+		{
   		if(agent.equals(this.name) == false)
   		{
   			checkForRoundCompletion();
   			seenCards.add(card);
   			this.turn++;
-  			System.out.println("-- Size of cardsInPlay = "+cardsInPlay.size());
-  			System.out.println("-- Card played "+card.toString());
-  			this.cardsInPlay.remove(card);
-  			System.out.println("-- Size of cardsInPlay = "+cardsInPlay.size());
   		}
-	}
+		}
 
   	/**
    	* See the result of the trick.
@@ -369,11 +339,10 @@ public class RationalAgentOM implements MSWAgent
    	* This method will be called on each eagent at the end of each trick.
    	* @param winner, the player who played the winning card.
    	* */
-
-	public void seeResult(String winner)
-	{
-		//TODO
-	}
+		public void seeResult(String winner)
+		{
+			//TODO
+		}
 
   	/**
    	* See the score for each player.
@@ -381,17 +350,18 @@ public class RationalAgentOM implements MSWAgent
   	* @param scoreboard, a Map from agent names to their score.
    	**/
   	public void seeScore(Map<String, Integer> scoreboard)
-	{
-  		this.cardsInPlay = new LinkedList<Card>(Arrays.asList(Card.values()));
-	}
+		{
+			//TODO
+		}
 
   	/**
    	* Returns the Agents name.
    	* A 10ms timelimit is given here.
    	* This method will only be called once.
+		* @return the name of the agent.
    	*/
   	public String sayName()
-	{
-		return this.name;
-	}
+		{
+			return this.name;
+		}
 }
