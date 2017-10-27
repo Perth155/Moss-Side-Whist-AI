@@ -2,8 +2,6 @@ import java.util.*;
 import java.lang.RuntimeException;
 import java.security.InvalidParameterException;
 
-
-
 public class MSWAgentImp implements MSWAgent{
     private String leftAgent;
     private String rightAgent;
@@ -242,7 +240,12 @@ public class MSWAgentImp implements MSWAgent{
             MCTNode bestNode = null;
             double bestNodeScore = -1;
             for (MCTNode child: rootNode.getChildren()){
-                double score = (double)child.getnWins() / child.getnVisits();
+                double score;
+                if (child.getnVisits() != 0) {
+                    score = (double)child.getnWins() / child.getnVisits();
+                } else {
+                    score = 0;
+                }
                 System.out.print("(" + child.getPlayedCard() + ", " + score + "), ");
                 if (score > bestNodeScore) {
                     bestNode = child;
@@ -440,7 +443,7 @@ public class MSWAgentImp implements MSWAgent{
         public MCTNode(MCTNode parent, GameState state){
             this.parent = parent;
             this.state = state;
-            nVisits = 1;
+            nVisits = 0;
             nWins = 0;
             children = new ArrayList<MCTNode>();
         }
@@ -457,7 +460,13 @@ public class MSWAgentImp implements MSWAgent{
         * @return The upper confidence bound of this node
         */
         public double getUpperConfidenceBound() {
-            double winScore = (double)nWins / (double)nVisits;
+            double winScore;
+            if (nVisits != 0) {
+                winScore = (double)nWins / nVisits;
+            } else {
+                winScore = 0;
+            }
+
             double c = 1.0;
             double lnt = Math.log(parent.getnVisits());
             double ucb = winScore + c * Math.sqrt(lnt/nVisits);
