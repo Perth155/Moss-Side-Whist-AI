@@ -272,7 +272,7 @@ public class MossSideWhist{
   }
 
   public static void main(String[] args){
-    MossSideWhist game = new MossSideWhist( new GreedyAgentX(), new RandomAgent(),  new GreedyAgent() );
+    MossSideWhist game = new MossSideWhist( new GreedyAgentX(), new GreedyAgentY(),  new RandomAgent() );
     game.playGame(100, System.out);
   }
 }

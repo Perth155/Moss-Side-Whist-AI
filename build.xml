@@ -4,6 +4,7 @@
 	<property name="main" value="MossSideWhist"/>
 	<property name="dir.jarfile" value="."/>
 	<property name="dir.src" value="./src"/>
+	<property name= "dir.doc" value="./doc"/>
 	<property name="project.name" value="Moss-Side-Whist-AI"/>
 
 	<path id="classpath">
@@ -33,6 +34,20 @@
 			<fileset dir="./bin"/>
 		</jar>
 	</target>
+
+
+
+	<target name="doc" description="generates documentation for the project">
+		  <delete dir="${dir.doc}" />
+		  <mkdir dir="${dir.doc}" />
+		  <javadoc destdir="${dir.doc}" author="true" version="true" use="true" windowtitle="${project.name}">
+		  	 	<fileset dir="${dir.src}" includes="**/GreedyAgentX.java **/MSWAgentImp.java" />
+    	  	<doctitle><![CDATA[<h1>{project.name}</h1>]]></doctitle>
+   		   	<bottom><![CDATA[<i>COPYLEFT &#169; 2017 Moss Side Whist AI, by Abrar Amin and Robert Fernandez.</i>]]></bottom>
+  		 </javadoc>
+  	</target>
+
+
 
 </project>
 
