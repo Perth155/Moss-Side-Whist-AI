@@ -24,5 +24,5 @@ $ ant clean
 Generate javadocs:
 ```
 $ ant doc
-$ firefox ./doc/index.html //open in Firefox.
+$ firefox ./doc/index.html #open in Firefox.
 ```
