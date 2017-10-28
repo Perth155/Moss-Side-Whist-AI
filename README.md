@@ -13,7 +13,7 @@ See ```rules.txt```
 ## Compiling and running
 To compile and run the project:
 ```
-$ ant comile
+$ ant compile
 $ java -jar Moss-Side-Whist-AI.jar
 ```
 Alternatively:
