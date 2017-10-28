@@ -14,7 +14,7 @@ import java.util.LinkedList;
 import java.util.Collections;
 import java.util.Comparator;
 
-public class GreedyAgentX implements MSWAgent
+public class Agent21518928 implements MSWAgent
 {
 	private String name; //name of the agent.
 	private List<Card> seenCards; //stores the current hand of the player.
@@ -25,15 +25,18 @@ public class GreedyAgentX implements MSWAgent
 	private List<Card> clubs; //stores all the clubs in player's hand.
 	private List<Card> spades; //stores all the spades in player's hand.
 	private Comparator<Card> cardComparator; //a comparator to compare cards based on strength.
+	private String opponentName1; //name of first opponent.
+	private String opponentName2;  //name of second opponent.
+
 
 
 	/**
 	* Default Constructor, sets up the greedy agent by initializing all classfields.
 	* Name is set to "GR33D by abraram" by default.
 	*/
-	public GreedyAgentX()
+	public Agent21518928()
 	{
-		this.name = "GR33D_EX by abraram";
+		this.name = "GR33D_EXv2";
 		setGreedyAgent();
 	}
 
@@ -42,10 +45,10 @@ public class GreedyAgentX implements MSWAgent
 	* Name is set to String argument provided.
 	* @param providedName specify the agent's name. Set to defaults if empty string.
 	*/
-	public GreedyAgentX(String providedName)
+	public Agent21518928(String providedName)
 	{
 		if(providedName.equals(""))
-				this.name = "GR33D_EX by abraram";
+				this.name = "GR33D_EXv2";
 		else
 			this.name = providedName;
 		setGreedyAgent();
@@ -101,7 +104,6 @@ public class GreedyAgentX implements MSWAgent
 	 */
 	public int compare(Card c1, Card c2)
 	{
-		System.out.println("* Comparing between... "+c1.toString() + " & " + c2.toString());
 		int mult1 = 1;
 		int mult2 = 1;
 		if(c1.suit == Suit.SPADES)
@@ -119,7 +121,7 @@ public class GreedyAgentX implements MSWAgent
 	*/
 	public void setup(String agentLeft, String agentRight)
 	{
-		
+		this.opponentName1 = agentLeft; this.opponentName2 = agentRight;
 	}
 
     /**
@@ -134,19 +136,6 @@ public class GreedyAgentX implements MSWAgent
 		putCardsToSuitList();
 	}
 
-
-  	/**
-	* A method for printing an array of cards, mainly used to
-  	* Print discarded cards for debugging.
-  	* @param dc discarded cards array of size 4.
-  	*/
-  	private void printDiscardArray(Card[] dc)
-  	{
-  		for(int i = 0; i < dc.length; i++)
-  		{
-  			System.out.println(dc[i].toString());
-  		}
-	}
 
   	/**
   	* Cards are allocated to their relevant list of suits. This helps when
@@ -185,7 +174,6 @@ public class GreedyAgentX implements MSWAgent
 		{
 			discardArr[i] = currentHand.remove(0);
 		}
-		printDiscardArray(discardArr);
 		putCardsToSuitList();
 		return discardArr;
 		}
@@ -232,20 +220,6 @@ public class GreedyAgentX implements MSWAgent
 		}
 	}
 
-
-	/**
-	* A method that can be called to print out the cards on the agent's hand.
-	* Mainly used for debugging.
-	*/
-	private void printHand()
-	{
-		System.out.println("The hand : ");
-		for(int i = 0; i < this.currentHand.size(); i++)
-		{
-			System.out.print(this.currentHand.get(i).toString() + " ");
-		}
-		System.out.println("");
-	}
 
 
 	/**
@@ -316,7 +290,6 @@ public class GreedyAgentX implements MSWAgent
 					else
 					{
 						pc = playingSuitReference.remove(i); //remove smallest required to win...
-						System.out.println("* Ha! found one. " + pc.toString());
 						playCardFound = true;
 						break;
 					}
@@ -324,11 +297,9 @@ public class GreedyAgentX implements MSWAgent
 				if(!playCardFound) 
 				{
 					pc = playingSuitReference.get(0);
-					System.out.println("* Meh.. You win. " + pc.toString());
 				}
 			}
  		}
- 		printHand();
  		this.currentHand.remove(pc);
  		putCardsToSuitList();
  		this.turn++;
@@ -344,14 +315,14 @@ public class GreedyAgentX implements MSWAgent
    	* @param agent, the name of the agent who played the card.
    	*/
   	public void seeCard(Card card, String agent)
-		{
-  		if(agent.equals(this.name) == false)
-  		{
-  			checkForRoundCompletion();
-  			seenCards.add(card);
-  			this.turn++;
-  		}
-		}
+	{
+	  	if(agent.equals(this.opponentName1) || agent.equals(this.opponentName2))
+	  	{
+	  		checkForRoundCompletion();
+	  		seenCards.add(card);
+	  		this.turn++;
+	  	}
+	}
 
   	/**
    	* See the result of the trick.

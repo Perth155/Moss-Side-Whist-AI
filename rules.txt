@@ -1,0 +1,13 @@
+Moss Side Whist uses a standard deck of 52 cards, with suits Hearts, Clubs, Diamonds, Spades, and face values 2-10, Jack, Queen King and Ace.
+Moss Side Whist is played between three players. The order of play is:
+Two players are dealt 16 cards each and the third player (the leader) is dealt 20.
+The leader examines their cards and chooses 4 cards to discard. These cards are not seen by the other players.
+They then play 16 tricks, with the leader going first in the first trick. Each trick goes as follows:
+The first player lays one of their cards face up on the table.
+The player to their left lays a card face up on the table. If they have any cards that are the suit as the leaders card, they must play a card of the same suit. Otherwise they can play any card they choose.
+The last player lays a card face up on the table. Again, they must follow the first players suit if they can.
+The winner is the person who played the highest card. Cards of the same suit are ordered by value (with Ace being the highest, and 2 the lowest). A spade (trumps) will beat any card of a different suit. Any card that is not a spade and not the same suit as the suit of the first players card is lower than the first players card.
+The winner scores a point, the played cards are removed, and the winner gets to play first in the next trick.
+Play continues until all cards have been played, and then the points are tallied.
+At the end of the round the leaders score is their number of points, minus eight, and the other players scores are their numbers of points, minus four.
+Several rounds will be player, each time with the lead moving one place to the left. Scores are accumulated over rounds, and players aim to have the highest score.

@@ -105,8 +105,6 @@ public class Agent21709566 implements MSWAgent{
 
         // Throw exception if the agent chose a card it does not have.
         if (!gameState.getPlayersCards().contains(bestCard)) {
-            System.out.println("Invalid card chosen");
-            System.out.println("Player chose " + bestCard);
             throw new RuntimeException("Invalid card chosen");                
         }
 
@@ -198,11 +196,6 @@ public class Agent21709566 implements MSWAgent{
                 return node;
             }
 
-            // if (node == rootNode() && !node.getState().isPlayerTurn()) {
-            //     node.getState().print();
-            //     throw new IllegalArgumentException("This node does not represent the Player's turn");
-            // }
-
             MCTNode bestNode = null;
             double bestNodeScore = -1;
             for (MCTNode child: node.getChildren()){
@@ -236,7 +229,6 @@ public class Agent21709566 implements MSWAgent{
                 throw new IllegalStateException("This node does not represent the Player's turn");
             }
 
-            System.out.println("Potential plays: ");
             MCTNode bestNode = null;
             double bestNodeScore = -1;
             for (MCTNode child: rootNode.getChildren()){
@@ -246,7 +238,6 @@ public class Agent21709566 implements MSWAgent{
                 } else {
                     score = 0;
                 }
-                System.out.print("(" + child.getPlayedCard() + ", " + score + "), ");
                 if (score > bestNodeScore) {
                     bestNode = child;
                     bestNodeScore = score;
@@ -267,8 +258,6 @@ public class Agent21709566 implements MSWAgent{
                 }
             }
 
-            System.out.println();
-            System.out.println("Playing (" + bestNode.getPlayedCard() + ", " + bestNodeScore + ")");
             return bestNode.getPlayedCard();
         }
 
