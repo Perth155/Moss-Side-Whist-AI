@@ -6,8 +6,8 @@ See ```rules.txt```
 
 
 ## Requirements
-* [JDK 1.8] (http://openjdk.java.net/install/)
-* [Apache Ant] (http://ant.apache.org/)
+* [JDK 1.8](http://openjdk.java.net/install/)
+* [Apache Ant](http://ant.apache.org/)
 
 
 ## Compiling and running
