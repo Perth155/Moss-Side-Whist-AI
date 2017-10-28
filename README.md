@@ -16,6 +16,12 @@ To compile and run the project:
 $ ant comile
 $ java -jar Moss-Side-Whist-AI.jar
 ```
+Alternatively:
+```
+$ cd src && javac *.java
+$ java MossSideWhist
+```
+
 Cleaning up:
 ```
 $ ant clean
